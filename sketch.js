@@ -1,29 +1,55 @@
-var ball;
+var db,allplayers;
+var form,game,player;
+var playercount,gamestate=0;
+var distance=0;
+var cars,car1,car2,car3,car4;
+var car1_img,car2_img,car3_img,car4_img;
+var bgimg,trackimg;
+function preload(){
+    car1_img=loadImage("../images/car1.png");
+    car2_img=loadImage("../images/car2.png");
+    car3_img=loadImage("../images/car3.png");
+    car4_img=loadImage("../images/car4.png");
 
+    bgimg=loadImage("../images/ground.png");
+    trackimg=loadImage("../images/track.jpg")
+
+}
 function setup(){
-    createCanvas(500,500);
-    ball = createSprite(250,250,10,10);
-    ball.shapeColor = "red";
+    db=firebase.database();
+    createCanvas(displayWidth-20,displayHeight-30);
+    game =new Game();
+    game.getstate();
+    game.start();
+    
+}
+ function draw(){
+   // var button=createButton("h3");
+    //button.html("reset");
+    // button.mousePressed(reset());
+if(playercount===4)
+{
+    game.update(1);
+    gamestate=1
+}
+if(gamestate===1)
+{
+    clear();
+    game.play();
+}
+if(gamestate===2){
+   // game.update(2);
+    game.end();
+
 }
 
-function draw(){
-    background("white");
-    if(keyDown(LEFT_ARROW)){
-        changePosition(-1,0);
+ }
+ function reset()
+ {
+     db.ref("/").set({
+         gameState:0,
+         playerCount:0
+     })
+     db.ref("/").remove("Players/Player");
+     db.ref("/").remove("Players");
     }
-    else if(keyDown(RIGHT_ARROW)){
-        changePosition(1,0);
-    }
-    else if(keyDown(UP_ARROW)){
-        changePosition(0,-1);
-    }
-    else if(keyDown(DOWN_ARROW)){
-        changePosition(0,+1);
-    }
-    drawSprites();
-}
-
-function changePosition(x,y){
-    ball.x = ball.x + x;
-    ball.y = ball.y + y;
-}
